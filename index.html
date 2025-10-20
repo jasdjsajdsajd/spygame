@@ -1,207 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spy Game</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f172a;
-      color: #f1f5f9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 1rem;
-    }
-
-    h1 {
-      color: #38bdf8;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .card {
-      background: #1e293b;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-    }
-
-    select, button {
-      margin-top: 0.75rem;
-      padding: 0.6rem;
-      width: 100%;
-      font-size: 1rem;
-      border-radius: 0.5rem;
-      border: none;
-    }
-
-    button {
-      background-color: #38bdf8;
-      color: #0f172a;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #0ea5e9;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .result {
-      font-size: 1.4rem;
-      font-weight: bold;
-      margin-top: 1rem;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Party Game Helper</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+  h1 { color: #38bdf8; text-align: center; margin-bottom: 1rem; }
+  .card {
+    background: #1e293b;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    max-width: 400px;
+    width: 100%;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  select, button {
+    margin-top: 0.75rem;
+    padding: 0.6rem;
+    width: 100%;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: none;
+  }
+  button { background-color: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; }
+  button:hover { background-color: #0ea5e9; }
+  .hidden { display: none; }
+  .result { font-size: 1.4rem; font-weight: bold; margin-top: 1rem; }
+  .section-title { margin-bottom: 1rem; font-size: 1.3rem; color: #a5f3fc; }
+</style>
 </head>
 <body>
-  <div class="card" id="setup">
-    <h1>Spy Game 🕵️</h1>
 
-    <label>Choose Category:</label>
-    <select id="category">
-      <option value="">-- Select Category --</option>
-      <option value="countries">Countries</option>
-      <option value="foods">Foods</option>
-      <option value="sports">Sports</option>
-      <option value="animals">Animals</option>
-      <option value="movies">Movies</option>
-      <option value="jobs">Jobs</option>
-      <option value="cities">Cities</option>
-    </select>
+<!-- Spy Game Card -->
+<div class="card" id="spySetup">
+  <div class="section-title">Spy Game 🕵️</div>
+  <label>Category:</label>
+  <select id="spyCategory">
+    <option value="">-- Select Category --</option>
+    <option value="countries">Countries</option>
+    <option value="foods">Foods</option>
+    <option value="sports">Sports</option>
+    <option value="animals">Animals</option>
+    <option value="movies">Movies</option>
+    <option value="jobs">Jobs</option>
+    <option value="cities">Cities</option>
+  </select>
 
-    <label>Number of Players:</label>
-    <select id="numPlayers">
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5" selected>5</option>
-      <option value="6">6</option>
-      <option value="7">7</option>
-      <option value="8">8</option>
-      <option value="9">9</option>
-      <option value="10">10</option>
-      <option value="11">11</option>
-      <option value="12">12</option>
-      <option value="13">13</option>
-      <option value="14">14</option>
-      <option value="15">15</option>
-      <option value="16">16</option>
-    </select>
+  <label>Number of Players:</label>
+  <select id="spyNumPlayers" onchange="updateSpyDefaultSpies()">
+    ${Array.from({length: 12}, (_, i) => `<option value="${i+3}">${i+3}</option>`).join('')}
+  </select>
 
-    <label>Number of Spies:</label>
-    <select id="numSpies">
-      <option value="1" selected>1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-    </select>
+  <label>Number of Spies:</label>
+  <select id="spyNumSpies"></select>
 
-    <button onclick="startGame()">Start Game</button>
-  </div>
+  <button onclick="startSpyGame()">Start Spy Game</button>
+</div>
 
-  <div class="card hidden" id="game">
-    <h1>Player <span id="playerNum"></span></h1>
-    <button id="revealBtn" onclick="reveal()">Reveal</button>
-    <div class="result hidden" id="result"></div>
-    <button id="nextBtn" class="hidden" onclick="nextPlayer()">Next Player</button>
-  </div>
+<!-- Spy Game Play Card -->
+<div class="card hidden" id="spyGame">
+  <h1>Player <span id="spyPlayerNum"></span></h1>
+  <button id="spyRevealBtn" onclick="spyReveal()">Reveal</button>
+  <div class="result hidden" id="spyResult"></div>
+  <button id="spyNextBtn" class="hidden" onclick="spyNextPlayer()">Next Player</button>
+</div>
 
-  <div class="card hidden" id="end">
-    <h1>All players have seen their roles.</h1>
-    <p>Start the discussion and find the spy!</p>
-    <button onclick="restart()">Play Again</button>
-  </div>
+<div class="card hidden" id="spyEnd">
+  <h1>All players have seen their roles.</h1>
+  <p>Start discussion and find the spy!</p>
+  <button onclick="restartSpy()">Play Spy Again</button>
+</div>
 
-  <script>
-    let players = [];
-    let currentPlayer = 0;
-    let secretWord = "";
+<!-- Werewolf/Mafia Card -->
+<div class="card" id="wwSetup">
+  <div class="section-title">Werewolf / Mafia 🎭</div>
+  <label>Number of Players:</label>
+  <select id="wwNumPlayers" onchange="updateWWMaxRoles()">
+    ${Array.from({length: 16}, (_, i) => `<option value="${i+3}">${i+3}</option>`).join('')}
+  </select>
 
-    const categories = {
-      countries: ["Japan", "Brazil", "France", "Canada", "Egypt", "Australia", "Italy", "Spain", "Mexico", "Norway"],
-      foods: ["Pizza", "Sushi", "Burger", "Tacos", "Pasta", "Ice Cream", "Steak", "Curry", "Dumplings", "Salad"],
-      sports: ["Football", "Tennis", "Basketball", "Cricket", "Hockey", "Boxing", "Golf", "Baseball", "Rugby", "Swimming"],
-      animals: ["Elephant", "Dog", "Cat", "Lion", "Dolphin", "Kangaroo", "Eagle", "Penguin", "Monkey", "Tiger"],
-      movies: ["Inception", "Titanic", "Avatar", "The Matrix", "Gladiator", "Frozen", "Jurassic Park", "Toy Story", "The Godfather", "Interstellar"],
-      jobs: ["Doctor", "Teacher", "Pilot", "Chef", "Engineer", "Police Officer", "Firefighter", "Soldier", "Artist", "Lawyer"],
-      cities: ["London", "Tokyo", "New York", "Paris", "Dubai", "Berlin", "Sydney", "Toronto", "Rome", "Los Angeles"]
-    };
+  <label>Number of Mafia:</label>
+  <select id="wwNumMafia"></select>
 
-    function startGame() {
-      const category = document.getElementById('category').value;
-      const numPlayers = parseInt(document.getElementById('numPlayers').value);
-      const numSpies = parseInt(document.getElementById('numSpies').value);
+  <label>Number of Doctors:</label>
+  <select id="wwNumDoctor"></select>
 
-      if (!category || numPlayers < 3 || numSpies < 1 || numSpies >= numPlayers) {
-        alert('Please fill all fields correctly!');
-        return;
-      }
+  <label>Number of Detectives:</label>
+  <select id="wwNumDetective"></select>
 
-      // pick random word from selected category
-      const wordList = categories[category];
-      secretWord = wordList[Math.floor(Math.random() * wordList.length)];
+  <label>Number of Narrators:</label>
+  <select id="wwNumNarrator">
+    <option value="0" selected>0</option>
+    <option value="1">1</option>
+  </select>
 
-      players = Array(numPlayers).fill(secretWord);
-      for (let i = 0; i < numSpies; i++) {
-        let index;
-        do { index = Math.floor(Math.random() * numPlayers); }
-        while (players[index] === "SPY");
-        players[index] = "SPY";
-      }
+  <button onclick="startWWGame()">Start Werewolf</button>
+</div>
 
-      currentPlayer = 0;
-      document.getElementById('setup').classList.add('hidden');
-      document.getElementById('game').classList.remove('hidden');
-      document.getElementById('playerNum').textContent = 1;
-      document.getElementById('result').classList.add('hidden');
-      document.getElementById('nextBtn').classList.add('hidden');
-      document.getElementById('revealBtn').classList.remove('hidden');
-    }
+<!-- Werewolf Play Card -->
+<div class="card hidden" id="wwGame">
+  <h1>Player <span id="wwPlayerNum"></span></h1>
+  <button id="wwRevealBtn" onclick="wwReveal()">Reveal</button>
+  <div class="result hidden" id="wwResult"></div>
+  <button id="wwNextBtn" class="hidden" onclick="wwNextPlayer()">Next Player</button>
+</div>
 
-    function reveal() {
-      const resultDiv = document.getElementById('result');
-      const revealBtn = document.getElementById('revealBtn');
-      const nextBtn = document.getElementById('nextBtn');
+<div class="card hidden" id="wwEnd">
+  <h1>All players have seen their roles.</h1>
+  <p>Start your Mafia/Werewolf game!</p>
+  <button onclick="restartWW()">Play Werewolf Again</button>
+</div>
 
-      if (players[currentPlayer] === "SPY") {
-        resultDiv.textContent = "You are the SPY!";
-      } else {
-        resultDiv.textContent = "Word: " + secretWord;
-      }
+<script>
+/* === Spy Game Logic === */
+let spyPlayers = [], spyCurrent = 0, spySecretWord = "";
+const spyCategories = {
+  countries: ["Japan","Brazil","France","Canada","Egypt","Australia","Italy","Spain","Mexico","Norway"],
+  foods: ["Pizza","Sushi","Burger","Tacos","Pasta","Ice Cream","Steak","Curry","Dumplings","Salad"],
+  sports: ["Football","Tennis","Basketball","Cricket","Hockey","Boxing","Golf","Baseball","Rugby","Swimming"],
+  animals: ["Elephant","Dog","Cat","Lion","Dolphin","Kangaroo","Eagle","Penguin","Monkey","Tiger"],
+  movies: ["Inception","Titanic","Avatar","Matrix","Gladiator","Frozen","Jurassic","Toy Story","Godfather","Interstellar"],
+  jobs: ["Doctor","Teacher","Pilot","Chef","Engineer","Police","Firefighter","Soldier","Artist","Lawyer"],
+  cities: ["London","Tokyo","New York","Paris","Dubai","Berlin","Sydney","Toronto","Rome","Los Angeles"]
+};
 
-      resultDiv.classList.remove('hidden');
-      revealBtn.classList.add('hidden');
-      nextBtn.classList.remove('hidden');
-    }
+function updateSpyDefaultSpies() {
+  const numPlayers = parseInt(document.getElementById('spyNumPlayers').value);
+  const spySelect = document.getElementById('spyNumSpies');
+  spySelect.innerHTML = "";
+  const maxSpies = Math.min(3, Math.ceil(numPlayers/4));
+  for(let i=1;i<=maxSpies;i++){
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = i;
+    if(i===Math.ceil(numPlayers/4)) opt.selected=true;
+    spySelect.appendChild(opt);
+  }
+}
+updateSpyDefaultSpies();
 
-    function nextPlayer() {
-      currentPlayer++;
-      if (currentPlayer >= players.length) {
-        document.getElementById('game').classList.add('hidden');
-        document.getElementById('end').classList.remove('hidden');
-      } else {
-        document.getElementById('playerNum').textContent = currentPlayer + 1;
-        document.getElementById('result').classList.add('hidden');
-        document.getElementById('nextBtn').classList.add('hidden');
-        document.getElementById('revealBtn').classList.remove('hidden');
-      }
-    }
+function startSpyGame() {
+  const category = document.getElementById('spyCategory').value;
+  const numPlayers = parseInt(document.getElementById('spyNumPlayers').value);
+  const numSpies = parseInt(document.getElementById('spyNumSpies').value);
 
-    function restart() {
-      document.getElementById('end').classList.add('hidden');
-      document.getElementById('setup').classList.remove('hidden');
-    }
-  </script>
+  if(!category || numPlayers<3 || numSpies<1 || numSpies>=numPlayers){ alert('Fill all fields correctly'); return; }
+  spySecretWord = spyCategories[category][Math.floor(Math.random()*spyCategories[category].length)];
+  spyPlayers = Array(numPlayers).fill(spySecretWord);
+  for(let i=0;i<numSpies;i++){
+    let idx; do{ idx=Math.floor(Math.random()*numPlayers);}while(spyPlayers[idx]==="SPY");
+    spyPlayers[idx]="SPY";
+  }
+  spyCurrent=0;
+  document.getElementById('spySetup').classList.add('hidden');
+  document.getElementById('spyGame').classList.remove('hidden');
+  document.getElementById('spyPlayerNum').textContent=1;
+  document.getElementById('spyResult').classList.add('hidden');
+  document.getElementById('spyNextBtn').classList.add('hidden');
+  document.getElementById('spyRevealBtn').classList.remove('hidden');
+}
+
+function spyReveal(){
+  const r=document.getElementById('spyResult'); r.classList.remove('hidden');
+  document.getElementById('spyRevealBtn').classList.add('hidden');
+  document.getElementById('spyNextBtn').classList.remove('hidden');
+  r.textContent = spyPlayers[spyCurrent]==="SPY"?"You are the SPY!":"Word: "+spySecretWord;
+}
+function spyNextPlayer(){
+  spyCurrent++;
+  if(spyCurrent>=spyPlayers.length){document.getElementById('spyGame').classList.add('hidden');document.getElementById('spyEnd').classList.remove('hidden');}
+  else{document.getElementById('spyPlayerNum').textContent=spyCurrent+1;
+       document.getElementById('spyResult').classList.add('hidden');
+       document.getElementById('spyNextBtn').classList.add('hidden');
+       document.getElementById('spyRevealBtn').classList.remove('hidden');}
+}
+function restartSpy(){document.getElementById('spyEnd').classList.add('hidden');document.getElementById('spySetup').classList.remove('hidden');updateSpyDefaultSpies();}
+
+/* === Werewolf/Mafia Logic === */
+let wwPlayers=[], wwCurrent=0;
+
+function updateWWMaxRoles(){
+  const numPlayers=parseInt(document.getElementById('wwNumPlayers').value);
+  const mafiaSelect=document.getElementById('wwNumMafia'); mafiaSelect.innerHTML="";
+  const doctorSelect=document.getElementById('wwNumDoctor'); doctorSelect.innerHTML="";
+  const detectSelect=document.getElementById('wwNumDetective'); detectSelect.innerHTML="";
+  for(let i=1;i<=Math.min(4,numPlayers-2);i++){ let o=document.createElement('option'); o.value=i;o.textContent=i; if(i===1)o.selected=true; mafiaSelect.appendChild(o);}
+  for(let i=0;i<=Math.min(4,numPlayers-1);i++){ let o=document.createElement('option'); o.value=i;o.textContent=i; doctorSelect.appendChild(o); detectSelect.appendChild(o);}
+}
+
+updateWWMaxRoles();
+
+function startWWGame(){
+  const numPlayers=parseInt(document.getElementById('wwNumPlayers').value);
+  let numMafia=parseInt(document.getElementById('wwNumMafia').value);
+  let numDoctor=parseInt(document.getElementById('wwNumDoctor').value);
+  let numDetective=parseInt(document.getElementById('wwNumDetective').value);
+  let numNarrator=parseInt(document.getElementById('wwNumNarrator').value);
+
+  if(numMafia+numDoctor+numDetective+numNarrator>numPlayers){ alert("Roles exceed number of players"); return;}
+
+  // fill remaining players as villagers
+  let numVillagers=numPlayers-(numMafia+numDoctor+numDetective+numNarrator);
+  wwPlayers = [];
+  for(let i=0;i<numMafia;i++) wwPlayers.push("Mafia");
+  for(let i=0;i<numDoctor;i++) wwPlayers.push("Doctor");
+  for(let i=0;i<numDetective;i++) wwPlayers.push("Detective");
+  for(let i=0;i<numNarrator;i++) wwPlayers.push("Narrator");
+  for(let i=0;i<numVillagers;i++) wwPlayers.push("Villager");
+
+  // shuffle
+  for(let i=wwPlayers.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [wwPlayers[i],wwPlayers[j]]=[wwPlayers[j],wwPlayers[i]];
+  }
+
+  wwCurrent=0;
+  document.getElementById('wwSetup').classList.add('hidden');
+  document.getElementById('wwGame').classList.remove('hidden');
+  document.getElementById('wwPlayerNum').textContent=1;
+  document.getElementById('wwResult').classList.add('hidden');
+  document.getElementById('wwNextBtn').classList.add('hidden');
+  document.getElementById('wwRevealBtn').classList.remove('hidden');
+}
+
+function wwReveal(){
+  const r=document.getElementById('wwResult'); r.classList.remove('hidden');
+  document.getElementById('wwRevealBtn').classList.add('hidden');
+  document.getElementById('wwNextBtn').classList.remove('hidden');
+  r.textContent=wwPlayers[wwCurrent];
+}
+function wwNextPlayer(){
+  wwCurrent++;
+  if(wwCurrent>=wwPlayers.length){document.getElementById('wwGame').classList.add('hidden');document.getElementById('wwEnd').classList.remove('hidden');}
+  else{document.getElementById('wwPlayerNum').textContent=wwCurrent+1;
+       document.getElementById('wwResult').classList.add('hidden');
+       document.getElementById('wwNextBtn').classList.add('hidden');
+       document.getElementById('wwRevealBtn').classList.remove('hidden');}
+}
+function restartWW(){
+  document.getElementById('wwEnd').classList.add('hidden'); document.getElementById('wwSetup').classList.remove('hidden');
+  updateWWMaxRoles();
+}
+</script>
 </body>
 </html>
