@@ -34,7 +34,7 @@
       text-align: center;
     }
 
-    input, select, button {
+    select, button {
       margin-top: 0.75rem;
       padding: 0.6rem;
       width: 100%;
@@ -68,17 +68,37 @@
 <body>
   <div class="card" id="setup">
     <h1>Spy Game 🕵️</h1>
-    <label>Category (e.g. Countries, Foods):</label>
-    <input type="text" id="category" placeholder="e.g. Countries">
 
-    <label>Secret Word (e.g. Japan):</label>
-    <input type="text" id="word" placeholder="e.g. Japan">
+    <label>Choose Category:</label>
+    <select id="category">
+      <option value="">-- Select Category --</option>
+      <option value="countries">Countries</option>
+      <option value="foods">Foods</option>
+      <option value="sports">Sports</option>
+      <option value="animals">Animals</option>
+      <option value="movies">Movies</option>
+      <option value="jobs">Jobs</option>
+      <option value="cities">Cities</option>
+    </select>
 
     <label>Number of Players:</label>
-    <input type="number" id="numPlayers" min="3" max="20" value="5">
+    <select id="numPlayers">
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5" selected>5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+    </select>
 
     <label>Number of Spies:</label>
-    <input type="number" id="numSpies" min="1" max="3" value="1">
+    <select id="numSpies">
+      <option value="1" selected>1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
 
     <button onclick="startGame()">Start Game</button>
   </div>
@@ -99,19 +119,33 @@
   <script>
     let players = [];
     let currentPlayer = 0;
+    let secretWord = "";
+
+    const categories = {
+      countries: ["Japan", "Brazil", "France", "Canada", "Egypt", "Australia", "Italy", "Spain", "Mexico", "Norway"],
+      foods: ["Pizza", "Sushi", "Burger", "Tacos", "Pasta", "Ice Cream", "Steak", "Curry", "Dumplings", "Salad"],
+      sports: ["Football", "Tennis", "Basketball", "Cricket", "Hockey", "Boxing", "Golf", "Baseball", "Rugby", "Swimming"],
+      animals: ["Elephant", "Dog", "Cat", "Lion", "Dolphin", "Kangaroo", "Eagle", "Penguin", "Monkey", "Tiger"],
+      movies: ["Inception", "Titanic", "Avatar", "The Matrix", "Gladiator", "Frozen", "Jurassic Park", "Toy Story", "The Godfather", "Interstellar"],
+      jobs: ["Doctor", "Teacher", "Pilot", "Chef", "Engineer", "Police Officer", "Firefighter", "Soldier", "Artist", "Lawyer"],
+      cities: ["London", "Tokyo", "New York", "Paris", "Dubai", "Berlin", "Sydney", "Toronto", "Rome", "Los Angeles"]
+    };
 
     function startGame() {
-      const category = document.getElementById('category').value.trim();
-      const word = document.getElementById('word').value.trim();
+      const category = document.getElementById('category').value;
       const numPlayers = parseInt(document.getElementById('numPlayers').value);
       const numSpies = parseInt(document.getElementById('numSpies').value);
 
-      if (!category || !word || numPlayers < 3 || numSpies < 1 || numSpies >= numPlayers) {
+      if (!category || numPlayers < 3 || numSpies < 1 || numSpies >= numPlayers) {
         alert('Please fill all fields correctly!');
         return;
       }
 
-      players = Array(numPlayers).fill(word);
+      // pick random word from selected category
+      const wordList = categories[category];
+      secretWord = wordList[Math.floor(Math.random() * wordList.length)];
+
+      players = Array(numPlayers).fill(secretWord);
       for (let i = 0; i < numSpies; i++) {
         let index;
         do { index = Math.floor(Math.random() * numPlayers); }
@@ -136,7 +170,7 @@
       if (players[currentPlayer] === "SPY") {
         resultDiv.textContent = "You are the SPY!";
       } else {
-        resultDiv.textContent = "Location: " + document.getElementById('word').value;
+        resultDiv.textContent = "Word: " + secretWord;
       }
 
       resultDiv.classList.remove('hidden');
